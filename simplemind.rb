@@ -49,13 +49,14 @@ helpers do
 		url('/article/' + File.basename(path).gsub(%r{\.[[:graph:]]{2,6}\z}, ""))
 	end
 
+	# write everything in lower case
 	def pages_count_message(c)
 		if c < 0
 			"are we in the antispace yet?"
 		elsif c == 0
 			"zero. everything has its time, like new posts."
 		elsif c == 1
-			"they say the first milion is always the hardest. but the first post is probably only the testing one."
+			"they say the first milion is always the hardest. but the first post is probably only testing one."
 		elsif c <= 5
 			"i'm only getting started."
 		elsif c <= 10
