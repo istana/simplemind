@@ -46,7 +46,7 @@ set :markdown_renderer, Redcarpet::Markdown.new(settings.html_renderer, {
 helpers do
 	# remove content directory and extension
 	def article_url(path)
-		url('/article/' + path.gsub("content", "").gsub(%r{\.[[:graph:]]{2,6}\z}, ""))
+		url('/article/' + File.basename(path).gsub(%r{\.[[:graph:]]{2,6}\z}, ""))
 	end
 
 	def pages_count_message(c)
