@@ -101,8 +101,30 @@ def parse_metadata_and_content(text)
 	# extract headers separated from content by double new lines
 	# category: foobar
 	delim_index = text.index("\n\n")
-	metadata = text[0..delim_index]
-	content = text[delim_index..text.size-1]
+
+	if delim_index
+		nl_index = text[0..delim_index].index("\n")
+
+		# there are no headers
+		if nl_index >= delim_index
+			metadata = ""
+			content = text
+		# there is newline and dual newline, so it might be multiple headers. or markdown title
+		# do not use colon in the first markdown title :-D
+		else
+			colon_index = text[nl_index..delim_index].index(":")
+
+			# colon exists = it is a header
+			if colon_index
+				metadata = text[0..delim_index]
+				content = text[delim_index..text.size-1]
+			# there is no colon, so probably markdown
+			else
+				metadata = ""
+				content = text
+			end
+		end
+	end
 	
 	metadata = metadata.split("\n").reduce({}) do |r,l|
 		r.merge(Hash[*l.split(":").first(2).map(&:strip).map(&:downcase)])
