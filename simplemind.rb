@@ -189,7 +189,7 @@ get '/' do
 		[path, File.stat(path).mtime]
 	end
 
-	articles.sort_by! {|k,v| v}
+	articles.sort_by! {|k,v| v}.reverse!
 
 	list = slim :articles_list, locals: { articles: articles, total: articles.size }
 	
