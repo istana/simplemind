@@ -1,0 +1,50 @@
+doctype 5
+
+html dir="ltr" lang="sk, en"
+  head
+    meta charset="UTF-8"
+    
+    link rel="home" href="/"
+    link rel="icon" type="image/png" href='favicon.png'
+    
+    title ;; MYRTANA.SK ;;
+
+    link rel="stylesheet" href=url("/css/myrtana.css") type="text/css"
+  body
+    header
+      .logo MYRTANA.sk
+      .belowlogo
+        | moja osobná stránka a ihrisko pre moje projekty <span class="delim">/</span> my personal page and playground for my projects
+        br
+        | zaujímam sa o hlavne o programovanie webov, jazyk Ruby a správu Linuxu <span class="delim">/</span> my main interests here are web programming, Ruby language and administration of Linux
+        br
+        | napíšte mi na ronon@myrtana.sk <span class="delim">/</span> write me to ronon@myrtana.sk
+        br
+        | viac obsahu čoskoro <span class="delim">/</span> more content soon
+
+    #main
+      - if defined? info
+        .info-message= info
+
+      == yield 
+
+    #footer
+      p Last generated: #{Time.now}, #{`ruby --version`} Env:#{settings.environment.inspect}
+/! Piwik
+javascript:
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//piwik.myrtana.sk/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 1]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+
+noscript
+  p
+    img src="//piwik.myrtana.sk/piwik.php?idsite=1" style="border:0;" alt=""
+/! End Piwik Code
+
