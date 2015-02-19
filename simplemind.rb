@@ -50,6 +50,12 @@ helpers do
 		url('/article/' + File.basename(path).gsub(%r{\.[[:graph:]]{2,6}\z}, ""))
 	end
 
+	def path_to_article_name(path)
+		parts = path.split('/')
+		parts[parts.size-1] = File.basename(parts[parts.size-1], '.*')
+		parts.join(' / ')
+	end
+
 	# write everything in lower case
 	def pages_count_message(c)
 		if c < 0
