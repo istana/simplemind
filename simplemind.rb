@@ -81,9 +81,9 @@ helpers do
 		elsif c < 180
 		  "at this point I've probably written all I wanted. Time to learn to draw?"	
 		elsif c < 200
-			"thank you, my inspiration."
+			"thank you, my muses. Calliope, is that you?"
 		elsif c < 230
-			"thank you, my inspiration. and bugs. and things that irritate me."
+			"thank you, my muses. and bugs. and things that irritate me."
 		elsif c < 250
 			"Nina Dobrev, will you marry me?"
 		elsif c < 280
