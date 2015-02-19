@@ -1,7 +1,6 @@
 # simplemind.rb
 
 require 'bundler/setup'
-require 'active_support/inflector'
 require 'active_support/core_ext/object/blank'
 require 'sinatra'
 require 'slim'
@@ -47,7 +46,13 @@ set :markdown_renderer, Redcarpet::Markdown.new(settings.html_renderer, {
 helpers do
 	# remove content directory and extension
 	def article_url(path)
-		url('/article/' + File.basename(path).gsub(%r{\.[[:graph:]]{2,6}\z}, ""))
+		parts = path.split('/')
+		parts[parts.size-1] = File.basename(parts[parts.size-1], '.*')
+
+		# remove content from the path
+		parts.shift
+
+		url('/article/' + parts.join("-"))
 	end
 
 	def path_to_article_name(path)
@@ -163,7 +168,7 @@ def render_markup(text, extension)
 end
 
 get %r{/article/([[:graph:]]+)} do
-	article_name = params[:captures].first
+	article_name = params[:captures].first.gsub("-", "/")
 
 	Dir[File.join('content', "#{article_name}*")].each do |f|
 		match = f.match(%r{\A(content/[[:graph:]]+(\.(?:slim|md|mkd|markdown|txt|text|html)))\z})
@@ -192,8 +197,12 @@ get %r{/article/([[:graph:]]+)} do
 end
 
 get '/' do
-	articles = Dir[File.join('content', '**', '*')].map do |path|
-		[path, File.stat(path).mtime]
+	articles = Dir[File.join('content', '**', '*')].reduce([]) do |result, path|
+		if File.file?(path)
+			result << [path, File.stat(path).mtime]
+		end
+	
+		result
 	end
 
 	articles.sort_by! {|k,v| v}.reverse!
