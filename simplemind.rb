@@ -189,6 +189,8 @@ get '/' do
 		[path, File.stat(path).mtime]
 	end
 
+	articles.sort_by! {|k,v| v}
+
 	list = slim :articles_list, locals: { articles: articles, total: articles.size }
 	
 	halt 200, slim(:main_layout) {
