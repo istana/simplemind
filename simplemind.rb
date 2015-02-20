@@ -27,25 +27,31 @@ end
 ::Slim::Engine.set_default_options(pretty: true, format: :html5)
 
 
-# initialize markdown renderer
-set :html_renderer, Redcarpet::Render::HTML.new
-set :markdown_renderer, Redcarpet::Markdown.new(settings.html_renderer, {
-		:no_intra_emphasis => true,
-		:tables => true,
-		:fenced_code_blocks => true,
-		:autolink => true,
-		:disable_indented_code_blocks => true,
-		:strikethrough => true,
-		:lax_spacing => false,
-		:space_after_headers => true,
-		:superscript => true,
-		:underline => true,
-		:highlight => true,
-		:quote => false,
-		:footnotes => true
-	})
+# quasi-models
+# use these methods from routes to list files which to render
+
+# the section contains articles
+# #index is by default a list to the articles
+# returns list of files
+def section(model)
+	Dir[File.join(settings.content, model.downcase, "#{article_name}*")]
+end
+
+# a journal contains articles
+# but its articles are concatenated into one article
+def journal(model)
+
+end
+
+# concrete page
+def article(model)
+
+end
+
+
 
 helpers do
+
 	# remove content directory and extension
 	def article_url(path)
 		parts = path.split('/')
