@@ -27,32 +27,51 @@ end
 
 ::Slim::Engine.set_default_options(pretty: true, format: :html5)
 
-
 # quasi-models
-# use these methods from routes to list files which to render
 
-# the section contains articles
-# #index is by default a list to the articles
-# returns list of files
-def section(model)
-	Dir[File.join(settings.content, model.downcase, "#{article_name}*")]
+# the section
+#
+# world / fonts / sans (opensans.md, verdana.md) <- files from the same section are treated as separate entities
+# world / fonts / sans / opensource / (league.md)
+# world / fonts / oblique
+# women / redheads
+#
+# only directories are shown
+#
+def section(model, &block)
+	Dir[File.join(settings.content, model.downcase, "**", "*")].each do |file|
+		if File.directory?(file)
+			block.call(file)
+		end
+	end
 end
 
-# a journal contains articles
-# but its articles are concatenated into one article
-def journal(model)
-
+# the journal - the same as the section, but files are flattened????
+#
+# journals / diary (2015-02-20.md,  2015/02/20.md)
+# journals / tech chronicle / 999.md <- another journal
+# journals / diary.md <- accepted, treated as already concatenated
+#
+def journal(model, &block)
+	Dir[File.join(settings.content, model.downcase, "**", "*")].each do |file|
+		if File.directory?(file)
+			block.call
+		end
+	end
 end
 
-# concrete page
+# articles
+#
+# articles / me.md
+# articles / hardware <- directories are not shown
+# articles / hardware / raspberrypi.textile
 def article(model)
-
+	Dir[File.join(settings.content, model.downcase, "**", "*")].each do |file|
+		block.call(file)
+	end
 end
-
-
 
 helpers do
-
 	# remove content directory and extension
 	def article_url(path)
 		parts = path.split('/')
