@@ -36,6 +36,7 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     backports (3.6.4)
+    bond (0.5.1)
     crass (1.0.1)
     i18n (0.7.0)
     json (1.8.2)
@@ -57,6 +58,14 @@ GEM
       open4 (~> 1.0)
       rake (>= 0.8, < 11.0)
     redcarpet (3.2.2)
+    ripl (0.7.1)
+      bond (~> 0.5.1)
+    ripl-multi_line (0.3.1)
+      ripl (>= 0.3.6)
+    ripl-rack (0.2.1)
+      rack (>= 1.0)
+      rack-test (~> 0.6.2)
+      ripl (>= 0.7.0)
     sanitize (3.1.1)
       crass (~> 1.0.1)
       nokogiri (>= 1.4.4)
@@ -69,6 +78,11 @@ GEM
     temple (0.7.5)
     thread_safe (0.3.4)
     tilt (1.4.1)
+    tux (0.3.0)
+      ripl (>= 0.3.5)
+      ripl-multi_line (>= 0.2.4)
+      ripl-rack (>= 0.2.0)
+      sinatra (>= 1.2.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     vlad (2.6.4)
@@ -91,5 +105,6 @@ DEPENDENCIES
   sinatra!
   sinatra-contrib!
   slim (~> 3.0.2)
+  tux
   vlad
   vlad-push
