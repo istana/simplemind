@@ -38,8 +38,11 @@ end
 #
 # only directories are shown
 #
-def section(model, &block)
-	Dir[File.join(settings.content, model.downcase, "**", "*")].each do |file|
+
+def section(uri, &block)
+	path = uri_to_file_path(uri)
+
+	Dir[File.join(settings.content, path, "**", "*")].each do |file|
 		if File.directory?(file)
 			block.call(file)
 		end
@@ -52,8 +55,10 @@ end
 # journals / tech chronicle / 999.md <- another journal
 # journals / diary.md <- accepted, treated as already concatenated
 #
-def journal(model, &block)
-	Dir[File.join(settings.content, model.downcase, "**", "*")].each do |file|
+def journal(uri, &block)
+	path = uri_to_file_path(uri)
+
+	Dir[File.join(settings.content, path[0..1])].each do |file|
 		if File.directory?(file)
 			block.call
 		end
@@ -66,9 +71,30 @@ end
 # articles / hardware <- directories are not shown
 # articles / hardware / raspberrypi.textile
 def article(model)
-	Dir[File.join(settings.content, model.downcase, "**", "*")].each do |file|
-		block.call(file)
+	Dir[File.join(settings.content, uri, "**", "*")].each do |file|
+		if File.file?(file)
+			block.call(file)
+		end
 	end
+end
+
+def uri_to_file_path(uri)
+	raise('path has no model') if uri.blank?
+
+	# convert path to ASCII, be paranoid
+	p = ActiveSupport::Inflector.transliterate(uri)
+	# do not allow dots (path traversal) in the uri, only [a-zA-Z_-]
+	p.gsub!(/[^\w-]/, "")
+	# remove double slashes
+	p.gsub!("//", "/")
+	p = p.split("/")
+
+	raise('path has no model') if p.size == 0
+
+	# downcase model
+	p[0].downcase!
+	# assemble path again
+	p.join("/")
 end
 
 helpers do
