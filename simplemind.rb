@@ -7,6 +7,8 @@ require 'slim'
 require 'redcarpet'
 require 'date'
 
+require_relative 'simplemind_renderer'
+
 disable :sessions
 
 if settings.environment == :production
@@ -145,27 +147,6 @@ def parse_metadata_and_content(text)
 	[metadata, content]
 end
 
-# for text, not fit for attribute values (escape '" additionally)
-def text_to_html(text)
-	text.gsub("&", "&amp;")
-		.gsub("<", "&lt;")
-		.gsub(">", "&gt;")
-		.gsub("\n", "<br>")
-end
-
-def render_markup(text, extension)
-	if extension == ".slim"
-		slim(text)
-	elsif extension =~ /\.(md|mkd|markdown)/
-		settings.markdown_renderer.render(text)
-	elsif extension == ".txt" || extension == ".text"
-		text_to_html(text)
-	elsif extension == ".html"
-		text
-	else
-		'unknown markup'
-	end
-end
 
 get %r{/article/([[:graph:]]+)} do
 	article_name = params[:captures].first.gsub("-", "/")
