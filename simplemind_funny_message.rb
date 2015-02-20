@@ -42,6 +42,8 @@ module Simplemind
 				"i always wanted a digital library..."
 			elsif c <= 300
 				"good, the fun begins now..."
+			elsif c <= 320
+				"program Simplemind, you said. it ought to be enough for everybody, you said."
 			else
 				"over 300!!!"
 			end
