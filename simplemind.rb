@@ -71,17 +71,28 @@ def journal(uri, &block)
 	end
 end
 
-# articles
+# articles, like recursive section
 #
 # articles / me.md
 # articles / hardware <- directories are not shown
 # articles / hardware / raspberrypi.textile
+#
 def article(uri, &block)
 	path = uri_to_file_path(uri)
 
+	article_query = File.join(settings.content, "#{path}.*")
+	articles_query = File.join(settings.content, path, "**", "*")
 
-	Dir[File.join(settings.content, path, "**", "*"), File.join(settings.content, "#{path}*")].reduce([]) do |r, file|
-		puts file.inspect
+	# found exact article with some extension
+	arts = if Dir[article_query].length > 0
+		Dir[article_query]
+	else
+		# find articles from some point
+		Dir[articles_query]
+	end
+
+	# filter only files, skip dirs and such
+	arts.reduce([]) do |r, file|
 		if File.file?(file)
 			r << block.call(file)
 		end
