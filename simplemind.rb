@@ -1,6 +1,7 @@
 # simplemind.rb
 
 require 'bundler/setup'
+require 'active_support/inflector'
 require 'active_support/core_ext/object/blank'
 require 'sinatra'
 require 'slim'
@@ -42,10 +43,11 @@ end
 def section(uri, &block)
 	path = uri_to_file_path(uri)
 
-	Dir[File.join(settings.content, path, "**", "*")].each do |file|
+	Dir[File.join(settings.content, path, "**", "*")].reduce([]) do |r, file|
 		if File.directory?(file)
-			block.call(file)
+			r << block.call(file)
 		end
+		r
 	end
 end
 
@@ -58,10 +60,11 @@ end
 def journal(uri, &block)
 	path = uri_to_file_path(uri)
 
-	Dir[File.join(settings.content, path[0..1])].each do |file|
+	Dir[File.join(settings.content, path[0..1])].reduce([]) do |r, file|
 		if File.directory?(file)
-			block.call
+			r << block.call(file)
 		end
+		r
 	end
 end
 
@@ -70,49 +73,79 @@ end
 # articles / me.md
 # articles / hardware <- directories are not shown
 # articles / hardware / raspberrypi.textile
-def article(model)
-	Dir[File.join(settings.content, uri, "**", "*")].each do |file|
+def article(uri, &block)
+	path = uri_to_file_path(uri)
+
+
+	Dir[File.join(settings.content, path, "**", "*"), File.join(settings.content, "#{path}*")].reduce([]) do |r, file|
+		puts file.inspect
 		if File.file?(file)
-			block.call(file)
+			r << block.call(file)
 		end
+		r
 	end
 end
 
-def uri_to_file_path(uri)
-	raise('path has no model') if uri.blank?
+def uri_to_file_path(u)
+	raise('uri has no model') if u.blank?
 
 	# convert path to ASCII, be paranoid
-	p = ActiveSupport::Inflector.transliterate(uri)
-	# do not allow dots (path traversal) in the uri, only [a-zA-Z_-]
-	p.gsub!(/[^\w-]/, "")
-	# remove double slashes
-	p.gsub!("//", "/")
+	p = ActiveSupport::Inflector.transliterate(u)
 	p = p.split("/")
+	raise('uri has no model') if p.size == 0
 
-	raise('path has no model') if p.size == 0
+	p.map! do |part|
+		# do not allow dots (path traversal) in the uri, only [a-zA-Z_-]
+		part.gsub(/[^\w-]/, "")
+	end
+
+	p.keep_if {|pa| !pa.blank?}
 
 	# downcase model
 	p[0].downcase!
+
+	# and pluralize
+	p[0] = ActiveSupport::Inflector.pluralize(p[0])
+
 	# assemble path again
 	p.join("/")
+end
+
+def file_path_to_uri(path)
+	raise('path has no model') if path.blank?
+
+	# convert path to ASCII, be paranoid
+	p = ActiveSupport::Inflector.transliterate(path)
+
+	# split path to segments
+	p = p.split("/")
+
+	# chop off the extensions, remove remaining dots and other characters
+	# handle something like /article/foo.md/photo.jpg
+	# valid case: /article/foo.md -> /article/foo
+	# uris with extensions are not nice, because they are format dependent
+	p.map! do |part|
+		part.gsub(/\.\w+\z/, "").gsub(/[^\w-]/, "")
+	end
+
+	p.keep_if {|pa| !pa.blank?}
+
+	# remove content folder
+	p.shift
+
+	p[0] = ActiveSupport::Inflector.singularize(p[0])
+
+	p.join('/')
 end
 
 helpers do
 	# remove content directory and extension
 	def article_url(path)
-		parts = path.split('/')
-		parts[parts.size-1] = File.basename(parts[parts.size-1], '.*')
-
-		# remove content from the path
-		parts.shift
-
-		url('/article/' + parts.join("-"))
+		file_path_to_uri(path)
 	end
 
 	def path_to_article_name(path)
-		parts = path.split('/')
-		parts[parts.size-1] = File.basename(parts[parts.size-1], '.*')
-		parts.join(' / ')
+		file_path_to_uri(path).gsub("/", " / ")
 	end
 end
 
@@ -154,10 +187,24 @@ def parse_metadata_and_content(text)
 	[metadata, content]
 end
 
+#get %r{(/articles/)} do
+#	articles = 
 
-get %r{/article/([[:graph:]]+)} do
-	article_name = params[:captures].first.gsub("-", "/")
+#end
 
+get %r{(/article/[[:graph:]]+)} do
+	puts params[:captures].inspect
+	article(params[:captures].first) do |art|
+		article = File.read(art)
+		metadata, content = parse_metadata_and_content(article)
+
+		halt 200, slim(:article, layout: :main_layout) {
+			metadata.map{|key, value| "#{key}: #{value}"}.join("\n") + "\n" + content
+			#(content, match[2])
+		}
+	end
+
+=begin
 	Dir[File.join('content', "#{article_name}*")].each do |f|
 		match = f.match(%r{\A(content/[[:graph:]]+(\.(?:slim|md|mkd|markdown|txt|text|html)))\z})
 
@@ -178,19 +225,15 @@ get %r{/article/([[:graph:]]+)} do
 		# show only one article with the same name
 		break
 	end
-
+=end
 	halt 404, slim(:article, layout: :main_layout, locals: { info: 'Article was not found'}) {
 	 	'foobar'
 	}
 end
 
 get '/' do
-	articles = Dir[File.join('content', '**', '*')].reduce([]) do |result, path|
-		if File.file?(path)
-			result << [path, File.stat(path).mtime]
-		end
-	
-		result
+	articles = article('articles') do |file|
+		[file, File.stat(file).mtime]
 	end
 
 	articles.sort_by! {|k,v| v}.reverse!
