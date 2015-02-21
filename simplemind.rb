@@ -207,13 +207,14 @@ end
 #end
 
 get %r{(/article/[[:graph:]]+)} do
-	puts params[:captures].inspect
 	article(params[:captures].first) do |art|
 		article = File.read(art)
 		metadata, content = parse_metadata_and_content(article)
 
+		rendered_content = Simplemind::Renderer.new(content).options(file_path: art).to_html
+
 		halt 200, slim(:article, layout: :main_layout) {
-			metadata.map{|key, value| "#{key}: #{value}"}.join("\n") + "\n" + content
+			metadata.map{|key, value| "#{key}: #{value}"}.join("\n") + "\n" + rendered_content
 			#(content, match[2])
 		}
 	end
