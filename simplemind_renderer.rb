@@ -4,6 +4,8 @@
 require 'redcarpet'
 # textile
 require 'redcloth'
+# slim
+require 'slim'
 # html
 require 'sanitize'
 # source code highlighter
@@ -13,26 +15,27 @@ require 'rouge'
 require 'rouge/plugins/redcarpet'
 
 class HTML < Redcarpet::Render::HTML
-  include Rouge::Plugins::Redcarpet
+	include Rouge::Plugins::Redcarpet
 end
+
+require 'active_support/core_ext/hash'
 
 module Simplemind
 	class Renderer
 		# final function
 		def to_html
 			if !@options[:file_path].blank?
-				file_ext[1] = @options[:file_path].match(%r{\.([[:graph:]]+)\z})
-
-				renderer = @renderers[file_ext]
+				file_ext = @options[:file_path].match(%r{\.([[:graph:]]+)\z})[1]
+				renderer = @renderers[file_ext.to_sym]
 
 				raise('renderer not found') if !renderer
 
-				result = renderer(@result, @options)
+				result = ActiveSupport::Inflector.constantize('::Simplemind::Markup').send(renderer, @text, @options)
 
-				@options[:filters].each do |usefilter|
-					filter = @filters[usefilter]
-					result = filter(result, @options)
-				end
+#				@options[:filters].each do |usefilter|
+#					filter = @filters[usefilter]
+#					result = filter(result, @options)
+#				end
 			else
 				raise('could not render text')
 			end
@@ -48,19 +51,19 @@ module Simplemind
 		end
 
 		def initialize(text)
-			@result = nil
+			@text = text
 			@options = {}
 
 			# I don't like class variables here
-			register_renderer('slim', ::Simplemind::Markup.slim)
-			register_renderer('md', ::Simplemind::Markup.markdown)
-			register_renderer('markdown', ::Simplemind::Markup.markdown)
-			register_renderer('txt', ::Simplemind::Markup.text)
-			register_renderer('text', ::Simplemind::Markup.text)
-			register_renderer('html', ::Simplemind::Markup.html)
-			register_renderer('textile', ::Simplemind::Markup.textile)
+			#register_renderer('slim', ::Simplemind::Markup.slim)
+			register_renderer('md', 'markdown')
+			register_renderer('markdown', 'markdown')
+			register_renderer('txt', 'text')
+			register_renderer('text', 'text')
+			register_renderer('html', 'html')
+			register_renderer('textile', 'textile')
 
-			register_filter('source_code', ::Simplemind::Filter.highlight_source_code)
+			register_filter('source_code', 'highlight_source_code')
 
 			self
 		end
@@ -79,10 +82,12 @@ module Simplemind
 		private
 
 		def register_filter(ext, filter)
+			@filters ||= {}
 			@filters[ext.to_sym] = filter
 		end
 
 		def register_renderer(which, markup)
+			@renderers ||= {}
 			@renderers[which.to_sym] = markup
 		end
 	end
@@ -91,20 +96,20 @@ module Simplemind
 		# escape that characters and convert newlines
 		# do not insert the result of this into attributes names
 		# in this case escape " and ' additionally
-		def text(text, options)
+		def self.text(text, options)
 			text.gsub("&", "&amp;")
 				.gsub("<", "&lt;")
 				.gsub(">", "&gt;")
 				.gsub("\n", "<br>")
 		end
 
-		def html(text, options)
+		def self.html(text, options)
 			# like do nothing?
 			text
 			# use sanitizer in public security
 		end
 
-		def markdown(text, options)
+		def self.markdown(text, options)
 			formatter = Redcarpet::Render::HTML.new
 			renderer = Redcarpet::Markdown.new(formatter, {
 				:no_intra_emphasis => true,
@@ -125,9 +130,13 @@ module Simplemind
 			renderer.render(text)
 		end
 
-		def textile(text, options)
+		def self.textile(text, options)
 			RedCloth.new(text).to_html
-		end	
+		end
+
+		#def slim(text, options)
+		#	slim(text)
+		#end	
 	end
 
 	module Filter
