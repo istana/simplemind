@@ -26,7 +26,10 @@ else
 	enable :static
 end
 
-::Slim::Engine.set_default_options(pretty: true, format: :html5)
+# keep the trailing slash
+set :content, 'content/'
+
+::Slim::Engine.set_options(pretty: true, format: :html)
 
 # quasi-models
 
