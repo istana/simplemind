@@ -10,6 +10,10 @@ require 'date'
 
 require_relative 'simplemind_renderer'
 require_relative 'simplemind_funny_message'
+require_relative 'simplemind_analytics'
+
+require 'awesome_print'
+require 'pry'
 
 disable :sessions
 
@@ -199,6 +203,29 @@ def parse_metadata_and_content(text)
 	end
 
 	[metadata, content]
+end
+
+# runs db migrations
+Simplemind::Analytics.migrate!
+
+#route :get, :post, :put, :patch, :options, :head, // do
+	#ap request.url
+#	Simplemind::Analytics.log_request(request, session, params)
+#end
+#
+
+before do
+	Simplemind::Analytics.log_request(request, session, params)
+	pass
+end
+
+get '/piwiktracker' do
+	r = Simplemind::Analytics.log_piwik(request, session, params)
+	if r
+		halt 200, 'Piwik request was logged ;-)'
+	else
+		halt 500, 'Problem saving Piwik request :-/'
+	end
 end
 
 #get %r{(/articles/)} do

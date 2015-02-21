@@ -9,6 +9,7 @@ html dir="ltr" lang="sk, en"
     
     title ;; MYRTANA.SK ;;
 
+    script src=url("/js/piwik.min.js") type="text/javascript"
     link rel="stylesheet" href=url("/css/myrtana.css") type="text/css"
   body
     header
@@ -30,21 +31,6 @@ html dir="ltr" lang="sk, en"
 
     #footer
       p Last generated: #{Time.now}, #{`ruby --version`} Env:#{settings.environment.inspect}
-/! Piwik
-javascript:
-  var _paq = _paq || [];
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//piwik.myrtana.sk/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', 1]);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
 
-noscript
-  p
-    img src="//piwik.myrtana.sk/piwik.php?idsite=1" style="border:0;" alt=""
-/! End Piwik Code
+    == erb(:piwik)
 

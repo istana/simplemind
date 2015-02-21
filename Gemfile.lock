@@ -35,11 +35,14 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    awesome_print (1.6.1)
     backports (3.6.4)
     bond (0.5.1)
+    coderay (1.1.0)
     crass (1.0.1)
     i18n (0.7.0)
     json (1.8.2)
+    method_source (0.8.2)
     mini_portile (0.6.2)
     minitest (5.5.1)
     multi_json (1.10.1)
@@ -47,7 +50,12 @@ GEM
       mini_portile (~> 0.6.0)
     nokogumbo (1.2.0)
       nokogiri
+    oj (2.11.4)
     open4 (1.3.4)
+    pry (0.10.1)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
     rack (1.6.0)
     rack-protection (1.5.3)
       rack
@@ -70,11 +78,14 @@ GEM
       crass (~> 1.0.1)
       nokogiri (>= 1.4.4)
       nokogumbo (= 1.2.0)
+    sequel (4.19.0)
     shotgun (0.9)
       rack (>= 1.0)
     slim (3.0.2)
       temple (~> 0.7.3)
       tilt (>= 1.3.3, < 2.1)
+    slop (3.6.0)
+    sqlite3 (1.3.10)
     temple (0.7.5)
     thread_safe (0.3.4)
     tilt (1.4.1)
@@ -97,14 +108,19 @@ PLATFORMS
 DEPENDENCIES
   RedCloth (~> 4.2.9)
   activesupport (~> 4.2)
+  awesome_print
+  oj (~> 2.11.4)
+  pry
   rake
   redcarpet (~> 3.2.2)
   rouge!
   sanitize (~> 3.1.1)
+  sequel (~> 4.19.0)
   shotgun
   sinatra!
   sinatra-contrib!
   slim (~> 3.0.2)
+  sqlite3 (~> 1.3.10)
   tux
   vlad
   vlad-push
