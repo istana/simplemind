@@ -7,7 +7,7 @@ require 'redcloth'
 # html
 require 'sanitize'
 # source code highlighter
-require 'rogue'
+require 'rouge'
 
 # redcarpet highlights source code in marked fenced blocks in markdown
 require 'rouge/plugins/redcarpet'
