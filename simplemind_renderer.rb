@@ -41,14 +41,8 @@ module Simplemind
 					raise("Extension could not be extracted: '#{@options[:file_path]}'")
 				end
 
-				#				@options[:filters].each do |usefilter|
-				#					filter = @filters[usefilter]
-				#					result = filter(result, @options)
-				#				end
-				#ap @text
-				#ap @metadata
 				{
-					:metadata => @metadata,
+					:metadata => @metadata.symbolize_keys!,
 					:content => @text
 				}
 			else
@@ -103,7 +97,7 @@ module Simplemind
 		end
 
 		def metadata
-			@metadata
+			@metadata.symbolize_keys!
 		end
 
 		private
