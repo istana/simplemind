@@ -1,0 +1,40 @@
+
+pre {
+	color: #fff;
+	background-color: rgba(0,0,0,0.8);
+	padding: 1em 1.5em 1.3em 1.5em;
+	border-radius: 0.3em;
+	white-space: pre-wrap;
+}
+
+h1, h2, h3, h4, h5, h6, .heading, .logo {
+	color: #436ebd;
+	font-family: MyMarcellus, sans-serif;
+}
+
+h1 { font-size: 1.5em; }
+
+h2 { font-size: 1.4em; }
+
+h3 { font-size: 1.3em; }
+
+h4 { font-size: 1.2em; }
+
+h5 { font-size: 1.1em; }
+
+h6 { font-size: 1em; }
+
+@font-face {
+	font-family: MyMarcellus;
+	src: local("Marcellus"),
+			url('/fonts/Marcellus-Regular.ttf');
+}
+
+i, b, em, strong {
+	font-family: MyMarcellus, sans-serif;
+}
+
+.logo {
+	font-size: 2.3em;
+}
+
