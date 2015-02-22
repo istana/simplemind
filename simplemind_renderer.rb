@@ -81,6 +81,7 @@ module Simplemind
 			register_filter('highlight_source_code', 'highlight_source_code')
 
 			register_parser('split_metadata_and_content', 'split_metadata_and_content')
+			register_parser('extract_title', 'extract_title')
 			self
 		end
 
@@ -269,8 +270,33 @@ module Simplemind
 		end
 
 		# extract markdown or textile h1 header from the text and adds into metadata
-		def self.parse_title(metadata_orig, text, options = {})
+		def self.extract_title(metadata_orig, text, options = {})
+			title = nil
+			content = text
 
+
+			# skip whitespaces on the beginng 
+			offset = 0
+			while text[offset] =~ /\s/
+				offset += 1
+			end
+
+			first_nl = text.index("\n", offset)
+
+			if first_nl && (text[0..first_nl] =~ /\A\s+#/ || text[0..first_nl] =~ /\A\s+h1\./)
+				title = text[0..first_nl].gsub('#', '').gsub('h1.', '').strip
+				content = text[first_nl..text.size-1].strip
+
+				return({
+					:metadata => metadata_orig.merge(title: title),
+					:content => content
+				})
+			end
+
+			{
+				:metadata => metadata_orig,
+				:content => text
+			}
 		end
 
 	end
