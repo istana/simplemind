@@ -1,7 +1,7 @@
 default: &DEFAULT
   meta:
     title: ';; Simplemind ;;'
-    title_delim: ' @@ '
+    title_delim: ' @ '
     description: Free and open source filesystem CMS written in Ruby/Sinatra. Easy and usable. Markdown, textile, plaintext, html, slim. Analytics. CLI and git needed.
 
 production:
