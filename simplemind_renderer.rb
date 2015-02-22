@@ -14,7 +14,7 @@ require 'rouge'
 # redcarpet highlights source code in marked fenced blocks in markdown
 require 'rouge/plugins/redcarpet'
 
-class HTML < Redcarpet::Render::HTML
+class SimpleHTML < Redcarpet::Render::HTML
 	include Rouge::Plugins::Redcarpet
 end
 
@@ -173,7 +173,8 @@ module Simplemind
 		end
 
 		def self.markdown(text, options)
-			formatter = Redcarpet::Render::HTML.new
+			#formatter = Redcarpet::Render::HTML.new
+			formatter = SimpleHTML.new
 			renderer = Redcarpet::Markdown.new(formatter, {
 				:no_intra_emphasis => true,
 				:tables => true,
