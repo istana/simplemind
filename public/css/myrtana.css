@@ -1,12 +1,12 @@
 
 html {
-	font-family: MyIndieFlower, sans-serif;
+	font-family: MyLiberation, sans-serif;
 	font-size: 100%;
 }
 
 body {
 	margin: 0.5em 1.5em 1em 1.5em;
-	font-size: 0.9em;
+	font-size: 1em;
 }
 
 pre {
@@ -19,7 +19,7 @@ pre {
 
 h1, h2, h3, h4, h5, h6, .heading, .logo {
 	color: #436ebd;
-	font-family: MyIndieFlower, sans-serif;
+	font-family: MyVoces, sans-serif;
 }
 
 h1 { font-size: 1.5em; }
@@ -35,52 +35,20 @@ h5 { font-size: 1.1em; }
 h6 { font-size: 1em; }
 
 @font-face {
-	font-family: MyMarcellus;
-	src: local("Marcellus"),
-			url('/fonts/Marcellus-Regular.ttf');
+	font-family: MyLiberation;
+	src: local("Liberation Sans"),
+			url("/fonts/LiberationSans-Regular.ttf");
 }
 
 @font-face {
-	font-family: MyVarela;
-	src: local("Varela Round"),
-			url('/fonts/VarelaRound-Regular.ttf');
+	font-family: MyVoces;
+	src: local("Voces Regular"),
+			url('/fonts/Voces-Regular.ttf');
 }
-
-@font-face {
-	font-family: MyPTMono;
-	src: local("PT Mono"),
-			url('/fonts/PTM55FT.latin-ext.ttf');
-}
-
-/*@font-face {
-	font-family: MyArvo;
-	src: local("Arvo Bold"),
-			url('/fonts/Arvo-Bold.ttf');
-}*/
-
-@font-face {
-	font-family: MyIndieFlower;
-	src: local("Indie Flower"),
-			url('/fonts/IndieFlower.ttf');
-}
-
-@font-face {
-	font-family: MyScada;
-	src: local("Scada Regular"),
-			url('/fonts/Scada-Regular.ttf');
-}
-
-@font-face {
-	font-family: MyYanone;
-	src: local("Yanone Kaffeesatz"),
-			url('/fonts/YanoneKaffeesatz-Regular.ttf');
-}
-
-
-
 
 i, b, em, strong {
-	font-family: MyMarcellus, sans-serif;
+	font-family: MyVoces, sans-serif;
+	color: #7053a2;
 }
 
 .logo {
