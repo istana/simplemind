@@ -181,12 +181,6 @@ helpers Simplemind::FunnyMessage
 # runs db migrations
 Simplemind::Analytics.migrate!
 
-#route :get, :post, :put, :patch, :options, :head, // do
-	#ap request.url
-#	Simplemind::Analytics.log_request(request, session, params)
-#end
-#
-
 before do
 	Simplemind::Analytics.log_request(request, session, params)
 	pass
