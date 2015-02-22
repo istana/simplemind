@@ -4,9 +4,11 @@ require 'bundler/setup'
 require 'active_support/inflector'
 require 'active_support/core_ext/object/blank'
 require 'sinatra'
+require 'sinatra/content_for'
 require 'slim'
 require 'redcarpet'
 require 'date'
+require 'yaml'
 
 require_relative 'simplemind_renderer'
 require_relative 'simplemind_funny_message'
@@ -32,6 +34,11 @@ end
 
 # keep the trailing slash
 set :content, 'content/'
+set :uri_format, '([[:graph:]]+)'
+
+simple_settings_file = (File.exists?('simplemind.yml') ? 'simplemind.yml' : 'simplemind.default.yml')
+set :simple, YAML::load_file(simple_settings_file)[settings.environment.to_s]
+set :meta, settings.simple["meta"]
 
 ::Slim::Engine.set_options(pretty: true, format: :html)
 

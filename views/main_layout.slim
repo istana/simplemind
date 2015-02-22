@@ -6,8 +6,10 @@ html dir="ltr" lang="sk, en"
     
     link rel="home" href="/"
     link rel="icon" type="image/png" href='favicon.png'
+
+    meta name="description" content=settings.simple["meta"]["description"]
     
-    title ;; MYRTANA.SK ;;
+    title= content_for?(:meta_title) ? (yield_content(:meta_title) + settings.meta["title_delim"] + settings.meta["title"]) : settings.meta["title"]
 
     script src=url("/js/piwik.min.js") type="text/javascript"
     link rel="stylesheet" href=url("/css/myrtana.css") type="text/css"

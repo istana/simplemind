@@ -1,4 +1,0 @@
-default:
-  meta_title: Simplemind
-  meta_desc: Filesystem CMS written in Ruby/Sinatra.
-
