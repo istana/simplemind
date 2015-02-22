@@ -23,34 +23,49 @@ require 'active_support/core_ext/hash'
 module Simplemind
 	class Renderer
 		# final function
-		def to_html
+		def gogogo
 			if !@options[:file_path].blank?
 				file_ext = @options[:file_path].match(%r{\.([[:graph:]]+)\z})[1]
-				renderer = @renderers[file_ext.to_sym]
 
-				raise('renderer not found') if !renderer
+				if file_ext
+					@options[:parsers].each do |p|
+						apply_parser(p)
+					end if @options[:parsers]
 
-				result = ActiveSupport::Inflector.constantize('::Simplemind::Markup').send(renderer, @text, @options)
+					@options[:filters].each do |f|
+						apply_filter(f)
+					end if @options[:filters]
 
-#				@options[:filters].each do |usefilter|
-#					filter = @filters[usefilter]
-#					result = filter(result, @options)
-#				end
+					apply_renderer(file_ext)
+				else
+					raise("Extension could not be extracted: '#{@options[:file_path]}'")
+				end
+
+				#				@options[:filters].each do |usefilter|
+				#					filter = @filters[usefilter]
+				#					result = filter(result, @options)
+				#				end
+				#ap @text
+				#ap @metadata
+				{
+					:metadata => @metadata,
+					:content => @text
+				}
 			else
 				raise('could not render text')
 			end
-			result
 		end
 
 		def self.read(file_path)
 			if File.exists?(file_path) && File.file?(file_path)
-				new(File.read(file_path)).options(file_path: 'file_path')
+				new(File.read(file_path)).options(file_path: file_path)
 			else
 				nil
 			end
 		end
 
 		def initialize(text)
+			@metadata = {}
 			@text = text
 			@options = {}
 
@@ -63,8 +78,9 @@ module Simplemind
 			register_renderer('html', 'html')
 			register_renderer('textile', 'textile')
 
-			register_filter('source_code', 'highlight_source_code')
+			register_filter('highlight_source_code', 'highlight_source_code')
 
+			register_parser('split_metadata_and_content', 'split_metadata_and_content')
 			self
 		end
 
@@ -79,16 +95,67 @@ module Simplemind
 			self
 		end
 
+		def parser(which)
+			@options[:parsers] ||= []
+			@options[:parsers] << which.to_sym
+			self
+		end
+
+		def metadata
+			@metadata
+		end
+
 		private
 
-		def register_filter(ext, filter)
+		def register_filter(name, method)
 			@filters ||= {}
-			@filters[ext.to_sym] = filter
+			@filters[name.to_sym] = method
 		end
 
 		def register_renderer(which, markup)
 			@renderers ||= {}
 			@renderers[which.to_sym] = markup
+		end
+
+		def register_parser(name, method)
+			@parsers ||= {}
+			@parsers[name.to_sym] = method
+		end
+
+		def apply_filter(which)
+			filter = @filters[which.to_sym]
+
+			if filter
+				@text = ActiveSupport::Inflector.constantize('::Simplemind::Filter')
+					.send(filter, @text, @options)
+			else
+				raise("Filter not found: #{which}")
+			end
+		end
+
+		def apply_renderer(file_ext)
+			renderer = @renderers[file_ext.to_sym]
+
+			if renderer
+				@text = ActiveSupport::Inflector.constantize('::Simplemind::Markup')
+					.send(renderer, @text, @options)
+			else
+				raise("Renderer for extension not found: #{file_ext}")
+			end
+		end
+
+		def apply_parser(which)
+			parser = @parsers[which.to_sym]
+
+			if parser
+				res = ActiveSupport::Inflector.constantize('::Simplemind::Parser')
+					.send(parser, @metadata, @text, @options)
+
+				@metadata = res[:metadata]
+				@text = res[:content]
+			else
+				raise("Parser not found: #{which}")
+			end
 		end
 	end
 
@@ -96,6 +163,7 @@ module Simplemind
 		# escape that characters and convert newlines
 		# do not insert the result of this into attributes names
 		# in this case escape " and ' additionally
+		# returns content
 		def self.text(text, options)
 			text.gsub("&", "&amp;")
 				.gsub("<", "&lt;")
@@ -139,13 +207,72 @@ module Simplemind
 		#end	
 	end
 
+	# filters modifies content like syntax highlighting
+	# or censoring, replacing placeholders and such
+	# returns content
 	module Filter
 		# well, shit, no libraries for language detection from the snippet
 		# for now just markdown will work
-		def highlight_source_code(source)
+		def self.highlight_source_code(source, options = {})
 			formatter = Rouge::Formatters::HTML.new(css_class: 'highlight')
 			formatter.format(lexer.lex(source))
 		end
+	end
+
+	# parsers extracts data from the content into separate variables
+	# think of reduce
+	# e.g. extract metadata
+	# returns hash with metadata and content
+	module Parser
+		def self.split_metadata_and_content(metadata_orig, text, options = {})
+			# extract headers separated from content by double new lines
+			# category: foobar
+			delim_index = text.index("\n\n")
+
+			if delim_index
+				nl_index = text[0..delim_index].index("\n")
+
+				# there are no headers
+				if (nl_index >= delim_index) && delim_index == 0
+					puts 'no_headers'
+					metadata = ""
+					content = text
+				elsif delim_index > 0
+					# there is one header
+					if (nl_index >= delim_index)
+						colon_index = text[0..nl_index].index(":")
+					# there are more headers
+					else
+						colon_index = text[nl_index..delim_index].index(":")
+					end
+
+					# colon exists = it is a header section
+					if colon_index
+						metadata = text[0..delim_index]
+						content = text[delim_index..text.size-1]
+						# there is no colon, so probably markdown
+					else
+						metadata = ""
+						content = text
+					end
+				end
+			end
+
+			metadata = metadata.split("\n").reduce({}) do |r,l|
+				r.merge(Hash[*l.split(":").first(2).map(&:strip).map(&:downcase)])
+			end
+
+			{
+				:metadata => metadata_orig.merge(metadata),
+				:content => content
+			}
+		end
+
+		# extract markdown or textile h1 header from the text and adds into metadata
+		def self.parse_title(metadata_orig, text, options = {})
+
+		end
+
 	end
 end
 
