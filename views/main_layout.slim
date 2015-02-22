@@ -20,7 +20,7 @@ html dir="ltr" lang="sk, en"
       .belowlogo
         | moja osobná stránka a ihrisko pre moje projekty <span class="delim">/</span> my personal page and playground for my projects
         br
-        | zaujímam sa o hlavne o programovanie webov, jazyk Ruby a správu Linuxu <span class="delim">/</span> my main interests here are web programming, Ruby language and administration of Linux
+        | sú tu články o programovaní a technológiách <span class="delim">/</span> there are articles about programming and technologies
         br
         | napíšte mi na ronon@myrtana.sk <span class="delim">/</span> write me to ronon@myrtana.sk
         br
@@ -33,7 +33,7 @@ html dir="ltr" lang="sk, en"
       == yield 
 
     #footer
-      p Last generated: #{Time.now}, #{`ruby --version`} We are in the #{settings.environment.inspect} environment. Simplemind version 0.0.1.
+      p Last generated: #{Time.now}, <code>#{`ruby --version`}</code> We are in the <code>#{settings.environment}</code> environment. Simplemind version 0.0.1.
 
     == erb(:piwik)
 

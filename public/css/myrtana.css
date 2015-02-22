@@ -1,4 +1,14 @@
 
+html {
+	font-family: MyIndieFlower, sans-serif;
+	font-size: 100%;
+}
+
+body {
+	margin: 0.5em 1.5em 1em 1.5em;
+	font-size: 0.9em;
+}
+
 pre {
 	color: #fff;
 	background-color: rgba(0,0,0,0.8);
@@ -9,7 +19,7 @@ pre {
 
 h1, h2, h3, h4, h5, h6, .heading, .logo {
 	color: #436ebd;
-	font-family: MyMarcellus, sans-serif;
+	font-family: MyIndieFlower, sans-serif;
 }
 
 h1 { font-size: 1.5em; }
@@ -30,6 +40,45 @@ h6 { font-size: 1em; }
 			url('/fonts/Marcellus-Regular.ttf');
 }
 
+@font-face {
+	font-family: MyVarela;
+	src: local("Varela Round"),
+			url('/fonts/VarelaRound-Regular.ttf');
+}
+
+@font-face {
+	font-family: MyPTMono;
+	src: local("PT Mono"),
+			url('/fonts/PTM55FT.latin-ext.ttf');
+}
+
+/*@font-face {
+	font-family: MyArvo;
+	src: local("Arvo Bold"),
+			url('/fonts/Arvo-Bold.ttf');
+}*/
+
+@font-face {
+	font-family: MyIndieFlower;
+	src: local("Indie Flower"),
+			url('/fonts/IndieFlower.ttf');
+}
+
+@font-face {
+	font-family: MyScada;
+	src: local("Scada Regular"),
+			url('/fonts/Scada-Regular.ttf');
+}
+
+@font-face {
+	font-family: MyYanone;
+	src: local("Yanone Kaffeesatz"),
+			url('/fonts/YanoneKaffeesatz-Regular.ttf');
+}
+
+
+
+
 i, b, em, strong {
 	font-family: MyMarcellus, sans-serif;
 }
@@ -38,8 +87,31 @@ i, b, em, strong {
 	font-size: 2.3em;
 }
 
+.belowlogo {
+	line-height: 150%;
+	margin: 1em 0 2em 0;
+}
+
 .delim {
 	color: red;
 	font-weight: bold;
 }
 
+#footer {
+	border-top: 1px solid rgba(67,110,189,0.3);
+	margin-top: 1.5em;
+}
+
+#footer p {
+	padding: 0;
+	margin: 0.5em 0;
+}
+
+.total {
+	color: #436ebd;
+	padding-right: 0.5em;
+}
+
+.total_message {
+	color: #436ebd;	
+}
