@@ -202,7 +202,9 @@ end
 
 get %r{(/article/[[:graph:]]+)} do
 	article(params[:captures].first) do |article|
-		r = Simplemind::Renderer.read(article).parser('split_metadata_and_content').gogogo
+		r = Simplemind::Renderer.read(article)
+			.parser('split_metadata_and_content')
+			.parser('extract_title').gogogo
 
 		halt 200, slim(:article, layout: :main_layout, locals: { metadata: r[:metadata]}) {
 			r[:content]
