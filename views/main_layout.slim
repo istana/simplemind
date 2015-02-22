@@ -33,7 +33,7 @@ html dir="ltr" lang="sk, en"
       == yield 
 
     #footer
-      p Last generated: #{Time.now}, #{`ruby --version`} Env:#{settings.environment.inspect}
+      p Last generated: #{Time.now}, #{`ruby --version`} We are in the #{settings.environment.inspect} environment. Simplemind version 0.0.1.
 
     == erb(:piwik)
 
